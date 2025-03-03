@@ -29,14 +29,10 @@ body {
   margin-top: 20px;
 }
 
-/* Logo Text */
-.logo-text {
-  font-size: 2.0rem;
-  font-weight: 400;
-  color: #fff;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+/* Logo */
+.logo {
+  width: 100px;
+  margin-bottom: 20px;
 }
 
 /* Judul */
@@ -125,7 +121,7 @@ h2 {
 
 /* Notifikasi Mengambang */
 .floating-notification {
-  display: none;
+  display: none; /* Awalnya disembunyikan */
   position: fixed;
   top: 50%;
   left: 50%;
@@ -164,28 +160,36 @@ h2 {
   cursor: pointer;
   transition: background-color 0.3s ease;
   width: 100%;
-  max-width: 600px;
+  max-width: 400px;
   margin: 0 auto;
-  margin-top: 50px; /* Atur sesuai keinginan, misalnya 50px */
 }
 
 .button:hover {
   background-color: #f1f1f1;
 }
 
-.show {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 10px;
-  padding: 5px 10px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+/* Sembunyikan tombol Lanjutkan di halaman PIN dan OTP */
+#pin-page ~ .footer #lanjutkan-button,
+#otp-page ~ .footer #lanjutkan-button {
+  display: none;
 }
 
-.show:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+.show-text-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 115px; /* Sesuaikan panjang */
+  height: 30px; /* Sesuaikan tinggi */
+  border-radius: 15px; /* Membuat lonjong */
+  background-color: transparent; /* Transparan */
+  border: 2px solid white; /* Garis putih */
+  color: white; /* Teks putih */
+  font-weight: 600;
+  cursor: pointer;
+  margin: 10px auto;
+  user-select: none;
+}
+
+.show-text-container:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Efek hover sedikit putih transparan */
 }
